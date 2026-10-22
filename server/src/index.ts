@@ -1,12 +1,25 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import prisma from './lib/prisma.ts'
-dotenv.config()
-const app = express()
-const PORT = process.env.PORT
-app.get('/' , (req ,res)=>{
-    res.send("Hello Orbiter")
-})
+import express from "express";
+import dotenv from "dotenv";
+import prisma from "./lib/prisma.ts";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth.ts";
+import cors from "cors";
+dotenv.config();
+const PORT = process.env.PORT;
+const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "PUT", "DELETE", "POST"],
+    credentials: true,
+  }),
+);
+app.all("/api/auth/*splat", toNodeHandler(auth));
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("Hello Orbiter");
+});
 
 app.get("/db-test", async (_req, res) => {
   try {
@@ -27,6 +40,6 @@ app.get("/db-test", async (_req, res) => {
   }
 });
 
-app.listen(PORT , ()=>{
-    console.log(`Orbiter is listening at PORT:${PORT}✅`)
-})
+app.listen(PORT, () => {
+  console.log(`Orbiter is listening at PORT:${PORT}✅`);
+});
