@@ -1,10 +1,10 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 import prisma from "./lib/prisma.ts";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.ts";
 import cors from "cors";
-dotenv.config();
+
 const PORT = process.env.PORT;
 const app = express();
 app.use(
@@ -20,6 +20,10 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello Orbiter");
 });
+app.get("/device" , async(req , res)=>{
+  const {user_code} = req.query
+  res.redirect(`http://localhost:3000/device?user_code=${user_code}`)
+})
 
 app.get("/db-test", async (_req, res) => {
   try {

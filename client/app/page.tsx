@@ -6,21 +6,18 @@ import { LogOut, Mail, CheckCircle2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
-
 export default function Home() {
   const { data, isPending } = authClient.useSession();
   const router = useRouter();
+  console.log("Home pending:", isPending);
+  console.log("Home user:", data?.user);
   React.useEffect(() => {
     if (!isPending && !data?.user) {
-      router.push("/auth/sign-in");
+      router.replace("/auth/register");
     }
-  }, [isPending, data, router]);
-  if (isPending) {
-    return (
-      <div className=" flex flex-col items-center justify-center h-screen">
-        <Spinner />
-      </div>
-    );
+  }, [isPending, data?.user, router]);
+  if (isPending || !data?.user) {
+    return null;
   }
 
   const handleSignOut = () => {
@@ -28,7 +25,7 @@ export default function Home() {
       fetchOptions: {
         onError: (ctx) => console.log(ctx),
         onSuccess: () => {
-          (router.push("/auth/sign-in"), router.refresh());
+          (router.push("/auth/register"), router.refresh());
         },
       },
     });
